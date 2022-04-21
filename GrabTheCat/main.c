@@ -5,12 +5,24 @@
 #include <GL/glut.h>
 
 #include "model.h"
+#include "draw.h"
+
+Model cat;
 
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(1.0, 0.0, 0.0);
-	
+
+	glPushMatrix();
+	//set_view(&(app->camera));
+	//render_scene(&(app->scene));
+	gluLookAt(0, 0, 0, 10, 10, 10, 0, 0, 1);
+	draw_model(&cat);
+	glPopMatrix();
+
+
 	glFlush();
+
+	printf("mukodok! :D\n");
 }
 
 void myinit() {
@@ -20,6 +32,9 @@ void myinit() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluOrtho2D(0.0, 499.0, 0.0, 499.0);
+
+	init_model(&cat);
+	load_model(&cat, "models/cat.obj");
 }
 
 void main(int argc, char** argv) {
@@ -29,11 +44,10 @@ void main(int argc, char** argv) {
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow("Grab The Cat");
 	glutDisplayFunc(display);
-
-	Model cat;
-	init_model(&cat);
-	load_model(&cat, "models/cat.obj");
+	glutIdleFunc(display);
 
 	myinit();
+
+		
 	glutMainLoop();
 }
