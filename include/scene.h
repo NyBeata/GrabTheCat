@@ -3,17 +3,17 @@
 
 #include "camera.h"
 #include "texture.h"
-
+#include "cat.h"
+#include <SDL2/SDL.h>
 #include <obj/model.h>
+#include <stdint.h>
 
 typedef struct Scene
 {
-    Model cat, ttrack, train;
+    Cat cats[MAX_CATS];
     Material material;
-    GLuint texture_cat, texture_ttrack, texture_train;
-    float cat_rotation;
-    int base_time;
-    int elapsed_time;
+    uint32_t base_time;
+    uint32_t elapsed_time;
 } Scene;
 
 /**
@@ -45,5 +45,7 @@ void render_scene(Scene* scene);
  * Draw the origin of the world coordinate system.
  */
 void draw_origin();
+
+void get_elapsed_time(Scene* scene);
 
 #endif /* SCENE_H */

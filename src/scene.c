@@ -1,29 +1,34 @@
 #include "scene.h"
 
+#include <stdio.h>
+
 #include <obj/load.h>
 #include <obj/draw.h>
 #include <obj/transform.h>
 
 void init_scene(Scene* scene)
 {
-    load_model(&(scene->cat), "assets/models/cat.obj");
+    /*load_model(&(scene->cat), "assets/models/cat.obj");
     scale_model(&(scene->cat), 0.5, 0.5, 0.5);
-    scene->texture_cat = load_texture("assets/textures/cat.jpg");
+    scene->texture_cat = load_texture("assets/textures/cat.jpg");*/
+    for (int i=0; i < MAX_CATS; i++){
+        load_model(&(scene->cats[i].model), "assets/models/cat.obj");
+        scene->cats[i].texture = load_texture("assets/textures/cat.jpg");
 
-    load_model(&(scene->ttrack), "assets/models/ttrack.obj");
-    scale_model(&(scene->ttrack), 1, 1, 1);
-    scene->texture_ttrack = load_texture("assets/textures/ttrack.jpg");
+        scene->cats[i].position.x = 0;
+        scene->cats[i].position.y = 0;
+        scene->cats[i].position.z = 0;
+        scene->cats[i].decision_time = 0;
+    }
 
-    load_model(&(scene->train), "assets/models/train.obj");
-    scale_model(&(scene->train), 0.1, 0.1, 0.1);
-    scene->texture_train = load_texture("assets/textures/train.jpg");
+    /*load_model(&(scene->bus), "assets/models/bus.obj");
+    scale_model(&(scene->bus), 1, 1, 1);
+    scene->texture_bus = load_texture("assets/textures/bus.jpg");*/
     
 
-    //glBindTexture(GL_TEXTURE_2D, scene->texture_cat);
-
-    scene->material.ambient.red = 0.0;
-    scene->material.ambient.green = 0.0;
-    scene->material.ambient.blue = 0.0;
+    scene->material.ambient.red = 0.5;
+    scene->material.ambient.green = 0.5;
+    scene->material.ambient.blue = 0.5;
 
     scene->material.diffuse.red = 1.0;
     scene->material.diffuse.green = 1.0;
@@ -38,15 +43,18 @@ void init_scene(Scene* scene)
 
 void set_lighting()
 {
-    float ambient_light[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    float ambient_light[] = { 0.5f, 0.5f, 0.5f, 1.0f };
     float diffuse_light[] = { 1.0f, 1.0f, 1.0, 1.0f };
-    float specular_light[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    float position[] = { 0.0f, 0.0f, 10.0f, 1.0f };
+    float specular_light[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    float position[] = { -10.0f, -10.0f, 10.0f, 0.0f };
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular_light);
     glLightfv(GL_LIGHT0, GL_POSITION, position);
+
+    glEnable (GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 }
 
 void set_material(const Material* material)
@@ -78,6 +86,11 @@ void set_material(const Material* material)
 
 void update_scene(Scene* scene)
 {
+    get_elapsed_time(scene);
+
+    for(int i=0; i < MAX_CATS; i++){
+        cat_ai_handler(&(scene->cats[i]), scene->elapsed_time);
+    }
 }
 
 void render_scene(Scene* scene)
@@ -85,36 +98,29 @@ void render_scene(Scene* scene)
     set_material(&(scene->material));
     set_lighting();
     draw_origin();
-    
-   /* int i,j;
-    for(i=0; i<4; i++){
-        for(j=0; j<4; j++){
-            glPushMatrix();
-            glTranslatef(i,j,0);
-            glScalef(0.01, 0.01, 0.01);
-            draw_model(&(scene->cat));
-            glPopMatrix();
-        }
-    }*/
 
-    glPushMatrix();
+    for(int i=0; i < MAX_CATS; i++){
+        glPushMatrix();
+        glTranslatef(scene->cats[i].position.x, scene->cats[i].position.y, scene->cats[i].position.z);
+        glRotatef(scene->cats[i].rotation, 0, 0, 1);
+        glBindTexture(GL_TEXTURE_2D, scene->cats[i].texture);
+        draw_model(&(scene->cats[i].model));
+        glPopMatrix();
+    }
+
+    /*glPushMatrix();
     glRotatef(scene->cat_rotation,0,0,1);
     glTranslatef(1,0,0);
     //glRotatef(scene->cat_rotation*5,0,0,1);
     scene->cat_rotation -= scene->elapsed_time;
     glBindTexture(GL_TEXTURE_2D, scene->texture_cat);
     draw_model(&(scene->cat));
-    glPopMatrix();
+    glPopMatrix();*/
 
-    glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, scene->texture_ttrack);
-    draw_model(&(scene->ttrack));
-    glPopMatrix();
-
-    glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, scene->texture_train);
-    draw_model(&(scene->train));
-    glPopMatrix();
+    /*glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, scene->texture_bus);
+    draw_model(&(scene->bus));
+    glPopMatrix();*/
 }
 
 void draw_origin()
@@ -134,4 +140,19 @@ void draw_origin()
     glVertex3f(0, 0, 1);
 
     glEnd();
+}
+
+void get_elapsed_time(Scene* scene)
+{
+    uint32_t current_time = SDL_GetTicks();
+    uint32_t new_elapsed_time = current_time - scene->base_time;
+    if(new_elapsed_time >= 1){
+        scene->elapsed_time = new_elapsed_time;
+        scene->base_time = current_time;
+
+        printf("\nElapsed time: %d, New base time: %d", scene->elapsed_time, scene->base_time);
+    }
+    else{
+        scene->elapsed_time = 0;
+    }
 }
