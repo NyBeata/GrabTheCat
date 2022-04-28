@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <math.h>
 
 /**
  * GLSL-like three dimensional vector

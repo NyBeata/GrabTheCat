@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define MAX_CATS 1
+#define MAX_CATS 5
 
 typedef struct Cat
 {
@@ -20,8 +20,8 @@ typedef struct Cat
     int decision_time;
 } Cat;
 
-void cat_ai_handler(Cat* cat, int elapsed_time);
+void cat_ai_handler(Cat* cat, uint32_t elapsed_time);
 
-void move_cat(Cat* cat);
+void move_cat(Cat* cat, uint32_t elapsed_time);
 
 #endif /* CAT_H */

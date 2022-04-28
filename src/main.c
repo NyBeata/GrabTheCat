@@ -17,7 +17,6 @@ int main(int argc, char* argv[])
         handle_app_events(&app);
         update_app(&app);
         render_app(&app);
-        get_elapsed_time(&(app.scene));
     
     }
     destroy_app(&app);

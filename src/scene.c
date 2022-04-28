@@ -8,9 +8,10 @@
 
 void init_scene(Scene* scene)
 {
-    /*load_model(&(scene->cat), "assets/models/cat.obj");
-    scale_model(&(scene->cat), 0.5, 0.5, 0.5);
-    scene->texture_cat = load_texture("assets/textures/cat.jpg");*/
+    scene->base_time = 0;
+    
+    init_ground(&(scene->pavement), "assets/textures/pave.jpg", 4, 4, -2, -2);
+
     for (int i=0; i < MAX_CATS; i++){
         load_model(&(scene->cats[i].model), "assets/models/cat.obj");
         scene->cats[i].texture = load_texture("assets/textures/cat.jpg");
@@ -18,7 +19,9 @@ void init_scene(Scene* scene)
         scene->cats[i].position.x = 0;
         scene->cats[i].position.y = 0;
         scene->cats[i].position.z = 0;
+        scene->cats[i].rotation = 0;
         scene->cats[i].decision_time = 0;
+        scene->cats[i].speed = 0;
     }
 
     /*load_model(&(scene->bus), "assets/models/bus.obj");
@@ -89,7 +92,9 @@ void update_scene(Scene* scene)
     get_elapsed_time(scene);
 
     for(int i=0; i < MAX_CATS; i++){
+        printf("\nCAT WILL GET: %d", scene->elapsed_time);
         cat_ai_handler(&(scene->cats[i]), scene->elapsed_time);
+        move_cat(&(scene->cats[i]), scene->elapsed_time);
     }
 }
 
@@ -98,6 +103,8 @@ void render_scene(Scene* scene)
     set_material(&(scene->material));
     set_lighting();
     draw_origin();
+
+    render_ground(&(scene->pavement));
 
     for(int i=0; i < MAX_CATS; i++){
         glPushMatrix();
@@ -150,7 +157,7 @@ void get_elapsed_time(Scene* scene)
         scene->elapsed_time = new_elapsed_time;
         scene->base_time = current_time;
 
-        printf("\nElapsed time: %d, New base time: %d", scene->elapsed_time, scene->base_time);
+        //printf("\nElapsed time: %d, New base time: %d", scene->elapsed_time, scene->base_time);
     }
     else{
         scene->elapsed_time = 0;

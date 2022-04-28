@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "texture.h"
 #include "cat.h"
+#include "ground.h"
 #include <SDL2/SDL.h>
 #include <obj/model.h>
 #include <stdint.h>
@@ -11,6 +12,7 @@
 typedef struct Scene
 {
     Cat cats[MAX_CATS];
+    Ground pavement;
     Material material;
     uint32_t base_time;
     uint32_t elapsed_time;
