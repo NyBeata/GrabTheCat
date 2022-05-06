@@ -93,5 +93,6 @@ void init_cat(Cat* cat)
     cat->speed = 0;
 
     cat->is_grabbed = false;
+    cat->is_dead = false;
 }
 

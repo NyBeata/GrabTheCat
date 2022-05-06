@@ -20,6 +20,7 @@ typedef struct Cat
     vec3 position;
     int decision_time;
     bool is_grabbed;
+    bool is_dead;
 } Cat;
 
 void cat_ai_handler(Cat* cat, uint32_t elapsed_time);
