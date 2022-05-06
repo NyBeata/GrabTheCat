@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define MAX_CATS 6
+#define MAX_CATS 5
 
 typedef struct Cat
 {

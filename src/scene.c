@@ -18,9 +18,7 @@ void init_scene(Scene* scene)
         init_cat(&(scene->cats[i]));
     }
 
-    /*load_model(&(scene->bus), "assets/models/bus.obj");
-    scale_model(&(scene->bus), 1, 1, 1);
-    scene->texture_bus = load_texture("assets/textures/bus.jpg");*/
+    init_bus(&(scene->bus));
     
 
     scene->material.ambient.red = 0.5;
@@ -91,9 +89,10 @@ void update_scene(Scene* scene)
             move_cat(&(scene->cats[i]), scene->elapsed_time);
         } else {
             relocate_cat(&(scene->cats[i]), scene->cursor_location.x, scene->cursor_location.y);
-        }
-        
+        }    
     }
+
+    move_bus(&(scene->bus), scene->elapsed_time);
 }
 
 void render_scene(Scene* scene)
@@ -119,10 +118,12 @@ void render_scene(Scene* scene)
         glPopMatrix();
     }
 
-    /*glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, scene->texture_bus);
-    draw_model(&(scene->bus));
-    glPopMatrix();*/
+    glPushMatrix();
+    glTranslatef(scene->bus.position.x, scene->bus.position.y, scene->bus.position.z);
+    glRotatef(scene->bus.rotation, 0, 0, 1);
+    glBindTexture(GL_TEXTURE_2D, scene->bus.texture);
+    draw_model(&(scene->bus.model));
+    glPopMatrix();
 
     scene->cursor_location = Calculate3DCursorLocation(x, y);
     /*glPushMatrix();

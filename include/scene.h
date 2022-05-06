@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "texture.h"
 #include "cat.h"
+#include "bus.h"
 #include "ground.h"
 #include "utils.h"
 #include <SDL2/SDL.h>
@@ -16,6 +17,7 @@ typedef struct Scene
     Ground pavement;
     Ground road;
     Ground grass;
+    Bus bus;
     Material material;
     uint32_t base_time;
     uint32_t elapsed_time;
