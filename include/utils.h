@@ -2,6 +2,10 @@
 #define UTILS_H
 
 #include <math.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+
 
 /**
  * GLSL-like three dimensional vector
@@ -38,6 +42,10 @@ typedef struct Material
  * Calculates radian from degree.
  */
 double degree_to_radian(double degree);
+
+vec3 Calculate3DCursorLocation(int cursorX, int cursorY);
+
+float get_distance(float x1, float x2, float y1, float y2);
 
 
 #endif /* UTILS_H */

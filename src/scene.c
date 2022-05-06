@@ -10,18 +10,12 @@ void init_scene(Scene* scene)
 {
     scene->base_time = 0;
     
-    init_ground(&(scene->pavement), "assets/textures/pave.jpg", 4, 4, -2, -2);
+    init_ground(&(scene->pavement), "assets/textures/pave.jpg", "assets/models/pave.obj", -1, 0);
+    init_ground(&(scene->road), "assets/textures/road.jpg", "assets/models/road.obj", 4, 0);
+    init_ground(&(scene->grass), "assets/textures/grass.jpg", "assets/models/grass.obj", 11, 0);
 
     for (int i=0; i < MAX_CATS; i++){
-        load_model(&(scene->cats[i].model), "assets/models/cat.obj");
-        scene->cats[i].texture = load_texture("assets/textures/cat.jpg");
-
-        scene->cats[i].position.x = 0;
-        scene->cats[i].position.y = 0;
-        scene->cats[i].position.z = 0;
-        scene->cats[i].rotation = 0;
-        scene->cats[i].decision_time = 0;
-        scene->cats[i].speed = 0;
+        init_cat(&(scene->cats[i]));
     }
 
     /*load_model(&(scene->bus), "assets/models/bus.obj");
@@ -92,9 +86,13 @@ void update_scene(Scene* scene)
     get_elapsed_time(scene);
 
     for(int i=0; i < MAX_CATS; i++){
-        printf("\nCAT WILL GET: %d", scene->elapsed_time);
-        cat_ai_handler(&(scene->cats[i]), scene->elapsed_time);
-        move_cat(&(scene->cats[i]), scene->elapsed_time);
+        if(scene->cats[i].is_grabbed == false){
+            cat_ai_handler(&(scene->cats[i]), scene->elapsed_time);
+            move_cat(&(scene->cats[i]), scene->elapsed_time);
+        } else {
+            relocate_cat(&(scene->cats[i]), scene->cursor_location.x, scene->cursor_location.y);
+        }
+        
     }
 }
 
@@ -102,9 +100,15 @@ void render_scene(Scene* scene)
 {
     set_material(&(scene->material));
     set_lighting();
-    draw_origin();
 
+    int x;
+    int y;
+    SDL_GetMouseState(&x, &y);
+
+    
     render_ground(&(scene->pavement));
+    render_ground(&(scene->road));
+    render_ground(&(scene->grass));
 
     for(int i=0; i < MAX_CATS; i++){
         glPushMatrix();
@@ -116,17 +120,14 @@ void render_scene(Scene* scene)
     }
 
     /*glPushMatrix();
-    glRotatef(scene->cat_rotation,0,0,1);
-    glTranslatef(1,0,0);
-    //glRotatef(scene->cat_rotation*5,0,0,1);
-    scene->cat_rotation -= scene->elapsed_time;
-    glBindTexture(GL_TEXTURE_2D, scene->texture_cat);
-    draw_model(&(scene->cat));
-    glPopMatrix();*/
-
-    /*glPushMatrix();
     glBindTexture(GL_TEXTURE_2D, scene->texture_bus);
     draw_model(&(scene->bus));
+    glPopMatrix();*/
+
+    scene->cursor_location = Calculate3DCursorLocation(x, y);
+    /*glPushMatrix();
+    glTranslatef(scene->cursor_location.x, scene->cursor_location.y, scene->cursor_location.z);
+    draw_origin();
     glPopMatrix();*/
 }
 
@@ -161,5 +162,22 @@ void get_elapsed_time(Scene* scene)
     }
     else{
         scene->elapsed_time = 0;
+    }
+}
+
+void grab_the_cat(Scene* scene)
+{
+    for(int i=0; i<MAX_CATS; i++){
+        if(get_distance(scene->cursor_location.x, scene->cats[i].position.x , scene->cursor_location.y, scene->cats[i].position.y) < 0.25){
+            scene->cats[i].is_grabbed = true;
+            break;
+        }
+    }   
+}
+
+void release_cat(Scene* scene)
+{
+    for(int i=0; i<MAX_CATS; i++){
+        scene->cats[i].is_grabbed = false;
     }
 }

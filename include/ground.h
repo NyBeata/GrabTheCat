@@ -12,12 +12,10 @@ typedef struct Ground
     Model model;
     GLuint texture;
     vec3 position;
-    int length;
-    int width;
     float size;
 } Ground;
 
-void init_ground(Ground* ground, char* filename, int length, int width, int x, int y);
+void init_ground(Ground* ground, char* filename, char* modelname, float x, float y);
 
 void render_ground(Ground* ground);
 
