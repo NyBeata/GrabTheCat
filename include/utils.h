@@ -5,6 +5,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+#include <GL/freeglut.h>
 
 
 /**
@@ -46,6 +47,18 @@ double degree_to_radian(double degree);
 vec3 Calculate3DCursorLocation(int cursorX, int cursorY);
 
 float get_distance(float x1, float x2, float y1, float y2);
+
+void setOrthographicProjection();
+
+void restorePerspectiveProjection();
+
+void renderBitmapString(float x, float y, float z, void *font, char *string);
+
+void drawText(float x, float y, float size, float width, void *font, char *string, float r, float g, float b);
+
+void renderStrokeFontString(float x, float y, float size, float width, void *font, char *string, float r, float g, float b);
+
+void drawOpening();
 
 
 #endif /* UTILS_H */

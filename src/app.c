@@ -68,6 +68,10 @@ void init_opengl()
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+
+    int argc = 1;
+    char *argv[1] = {(char*)"Something"};
+    glutInit(&argc, argv);
 }
 
 void reshape(GLsizei width, GLsizei height)

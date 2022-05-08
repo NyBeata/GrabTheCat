@@ -19,11 +19,11 @@ void spawn_bus(Bus* bus)
     int LoR = (rand() %(1 - 0 + 1)) + 0;
 
     if(LoR == 0){
-        bus->position.x = 2.8;
+        bus->position.x = 3.1;
         bus->position.y = 10;
         bus->rotation = 180;
     } else {
-        bus->position.x = 1.2;
+        bus->position.x = 1.6;
         bus->position.y = -10;
         bus->rotation = 0;
     }

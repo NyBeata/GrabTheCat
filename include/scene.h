@@ -22,6 +22,8 @@ typedef struct Scene
     uint32_t base_time;
     uint32_t elapsed_time;
     vec3 cursor_location;
+    int score;
+    int sec;
 } Scene;
 
 /**

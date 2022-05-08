@@ -43,3 +43,102 @@ float get_distance(float x1, float x2, float y1, float y2)
 
     return dtn;
 }
+
+void setOrthographicProjection() {
+
+	// switch to projection mode
+	glMatrixMode(GL_PROJECTION);
+
+	// save previous matrix which contains the
+	//settings for the perspective projection
+	glPushMatrix();
+
+	// reset matrix
+	glLoadIdentity();
+
+	// set a 2D orthographic projection
+	gluOrtho2D(0, 1280, 720, 0);
+
+	// switch back to modelview mode
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void restorePerspectiveProjection() {
+
+	glMatrixMode(GL_PROJECTION);
+	// restore previous projection matrix
+	glPopMatrix();
+
+	// get back to modelview mode
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void renderBitmapString(float x, float y, float z, void *font, char *string)
+{
+
+	char *c;
+	glRasterPos3f(x, y, z);
+	for (c=string; *c != '\0'; c++) {
+		glutBitmapCharacter(font, *c);
+	}
+}
+
+void drawText(float x, float y, float size, float width, void *font, char *string, float r, float g, float b)
+{
+    // Projekciós mód átállítása
+	setOrthographicProjection();
+
+	glPushMatrix();
+	glLoadIdentity();
+    renderStrokeFontString(x, y, size, width, font, string, r, g, b);
+	glPopMatrix();
+
+	// Proejkciós mód visszaállítása
+	restorePerspectiveProjection();
+}
+
+void renderStrokeFontString(float x, float y, float size, float width, void *font, char *string, float r, float g, float b)
+{  
+
+	char *c;
+	glPushMatrix();
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+	glTranslatef(x, y, 0);
+	glScalef(size, -(size), size);
+    glLineWidth(width);
+    glColor3f(r, g, b);
+	for (c=string; *c != '\0'; c++) {
+		glutStrokeCharacter(font, *c);
+	}
+    glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
+void drawOpening()
+{
+	setOrthographicProjection();
+	
+	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
+	//glBindTexture(GL_TEXTURE_2D, texture_names[17]);
+	
+	glPushMatrix();
+	glLoadIdentity();
+	
+	glBegin(GL_QUADS);
+		glTexCoord2f(0.0, 0.0);
+        glVertex3d(0, 0, 0);
+		glTexCoord2f(0.0, 1.0);
+        glVertex3d(0, 720, 0);
+		glTexCoord2f(1.0, 1.0);
+        glVertex3d(1280, 720, 0);
+		glTexCoord2f(1.0, 0.0);
+        glVertex3d(1280, 0, 0);
+	glEnd();
+	
+	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+	glPopMatrix();
+	
+	restorePerspectiveProjection();
+}

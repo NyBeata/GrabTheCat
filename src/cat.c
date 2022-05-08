@@ -4,7 +4,7 @@
 void cat_ai_handler(Cat* cat, uint32_t elapsed_time)
 {
     cat->decision_time = cat->decision_time - elapsed_time;
-    printf("\nCAT DECISION TIME: %d", cat->decision_time);
+    //printf("\nCAT DECISION TIME: %d", cat->decision_time);
     //printf("\nCAT GOT: %d", elapsed_time);
     if(cat->decision_time < 100){
         cat->speed = ((rand() %(25 - 15 + 1)) + 15) * 0.000028;
@@ -40,7 +40,7 @@ void cat_ai_handler(Cat* cat, uint32_t elapsed_time)
 
         cat->decision_time = (rand() %(4000 - 1000 + 1)) + 1000;
 
-        printf("\nTHE CAT HAS DECIDED. IT WILL DECIDE AGAIN IN %d MILISECS", cat->decision_time);
+        //printf("\nTHE CAT HAS DECIDED. IT WILL DECIDE AGAIN IN %d MILISECS", cat->decision_time);
     }
        // printf("\nIT WILL DECIDE AGAIN IN %d MILISECS", cat->decision_time);
 }
@@ -93,5 +93,6 @@ void init_cat(Cat* cat)
     cat->speed = 0;
 
     cat->is_grabbed = false;
+    cat->is_dead = false;
 }
 

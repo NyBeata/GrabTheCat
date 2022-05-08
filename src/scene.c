@@ -1,6 +1,7 @@
 #include "scene.h"
 
 #include <stdio.h>
+#include <math.h>
 
 #include <obj/load.h>
 #include <obj/draw.h>
@@ -34,6 +35,9 @@ void init_scene(Scene* scene)
     scene->material.specular.blue = 0.0;
 
     scene->material.shininess = 0.0;
+
+    scene->score = 0;
+    scene->sec = 1000;
 }
 
 void set_lighting()
@@ -83,16 +87,32 @@ void update_scene(Scene* scene)
 {
     get_elapsed_time(scene);
 
+    if(scene->sec > 100){
+        scene->sec -= scene->elapsed_time;
+    } else {
+        scene->score = scene->score + 1;
+        scene->sec += 1000;
+        printf("\nScore: %d", scene->score);
+    }
+
     for(int i=0; i < MAX_CATS; i++){
-        if(scene->cats[i].is_grabbed == false){
+        if(scene->cats[i].is_grabbed == false && scene->cats[i].is_dead == false){
             cat_ai_handler(&(scene->cats[i]), scene->elapsed_time);
             move_cat(&(scene->cats[i]), scene->elapsed_time);
-        } else {
+        } else if (scene->cats[i].is_dead == false){
             relocate_cat(&(scene->cats[i]), scene->cursor_location.x, scene->cursor_location.y);
         }    
     }
 
     move_bus(&(scene->bus), scene->elapsed_time);
+
+    for(int i=0; i < MAX_CATS; i++){
+        if(fabs(scene->cats[i].position.x - scene->bus.position.x) < 0.6){
+            if(fabs(scene->cats[i].position.y - scene->bus.position.y) < 1){
+            scene->cats[i].is_dead = true;
+            }
+        }
+    }
 }
 
 void render_scene(Scene* scene)
@@ -114,6 +134,12 @@ void render_scene(Scene* scene)
         glTranslatef(scene->cats[i].position.x, scene->cats[i].position.y, scene->cats[i].position.z);
         glRotatef(scene->cats[i].rotation, 0, 0, 1);
         glBindTexture(GL_TEXTURE_2D, scene->cats[i].texture);
+        
+        if(scene->cats[i].is_dead == true){
+            glTranslatef(0, 0, -0.3);
+            glScalef(1.2, 1.5, 0.01);
+        }
+        
         draw_model(&(scene->cats[i].model));
         glPopMatrix();
     }
@@ -126,10 +152,10 @@ void render_scene(Scene* scene)
     glPopMatrix();
 
     scene->cursor_location = Calculate3DCursorLocation(x, y);
-    /*glPushMatrix();
-    glTranslatef(scene->cursor_location.x, scene->cursor_location.y, scene->cursor_location.z);
-    draw_origin();
-    glPopMatrix();*/
+
+    char str[10];
+    sprintf(str, "%d", scene->score);
+    drawText(20, 70, 0.5, 3, GLUT_STROKE_ROMAN, str, 0.85882352941, 0.43921568627, 0.57647058823);
 }
 
 void draw_origin()
