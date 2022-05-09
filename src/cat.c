@@ -7,7 +7,7 @@ void cat_ai_handler(Cat* cat, uint32_t elapsed_time)
     //printf("\nCAT DECISION TIME: %d", cat->decision_time);
     //printf("\nCAT GOT: %d", elapsed_time);
     if(cat->decision_time < 100){
-        cat->speed = ((rand() %(25 - 15 + 1)) + 15) * 0.000028;
+        cat->speed = ((rand() %(25 - 13 + 1)) + 13) * 0.000028;
         float distance = cat->position.x * 0.5;
 
         if(cat->position.x < 1.5){

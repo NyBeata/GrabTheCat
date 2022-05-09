@@ -24,6 +24,11 @@ typedef struct Scene
     vec3 cursor_location;
     int score;
     int sec;
+    GLuint game_start;
+    GLuint game_over;
+    bool is_start;
+    bool is_over;
+    int final_countdown;
 } Scene;
 
 /**

@@ -9,8 +9,9 @@
 
 void init_scene(Scene* scene)
 {
-    scene->base_time = 0;
-    
+    scene->game_start = load_texture("assets/textures/start.png");
+    scene->game_over = load_texture("assets/textures/gameover.png");
+
     init_ground(&(scene->pavement), "assets/textures/pave.jpg", "assets/models/pave.obj", -1, 0);
     init_ground(&(scene->road), "assets/textures/road.jpg", "assets/models/road.obj", 4, 0);
     init_ground(&(scene->grass), "assets/textures/grass.jpg", "assets/models/grass.obj", 11, 0);
@@ -38,6 +39,11 @@ void init_scene(Scene* scene)
 
     scene->score = 0;
     scene->sec = 1000;
+
+    scene->is_start = true;
+    scene->is_over = false;
+
+    scene->final_countdown = 4000;
 }
 
 void set_lighting()
@@ -85,14 +91,11 @@ void set_material(const Material* material)
 
 void update_scene(Scene* scene)
 {
-    get_elapsed_time(scene);
-
     if(scene->sec > 100){
         scene->sec -= scene->elapsed_time;
-    } else {
+    } else if (scene->is_over == false) {
         scene->score = scene->score + 1;
         scene->sec += 1000;
-        printf("\nScore: %d", scene->score);
     }
 
     for(int i=0; i < MAX_CATS; i++){
@@ -107,9 +110,10 @@ void update_scene(Scene* scene)
     move_bus(&(scene->bus), scene->elapsed_time);
 
     for(int i=0; i < MAX_CATS; i++){
-        if(fabs(scene->cats[i].position.x - scene->bus.position.x) < 0.6){
-            if(fabs(scene->cats[i].position.y - scene->bus.position.y) < 1){
+        if(fabs(scene->cats[i].position.x - scene->bus.position.x) < 0.65){
+            if(fabs(scene->cats[i].position.y - scene->bus.position.y) < 1.1){
             scene->cats[i].is_dead = true;
+            scene->is_over = true;
             }
         }
     }
@@ -117,45 +121,70 @@ void update_scene(Scene* scene)
 
 void render_scene(Scene* scene)
 {
-    set_material(&(scene->material));
-    set_lighting();
+    if(scene->is_start == false && (scene->is_over == false || scene->final_countdown > 100)){
+        set_material(&(scene->material));
+        set_lighting();
 
-    int x;
-    int y;
-    SDL_GetMouseState(&x, &y);
+        int x;
+        int y;
+        SDL_GetMouseState(&x, &y);
 
-    
-    render_ground(&(scene->pavement));
-    render_ground(&(scene->road));
-    render_ground(&(scene->grass));
-
-    for(int i=0; i < MAX_CATS; i++){
-        glPushMatrix();
-        glTranslatef(scene->cats[i].position.x, scene->cats[i].position.y, scene->cats[i].position.z);
-        glRotatef(scene->cats[i].rotation, 0, 0, 1);
-        glBindTexture(GL_TEXTURE_2D, scene->cats[i].texture);
         
-        if(scene->cats[i].is_dead == true){
-            glTranslatef(0, 0, -0.3);
-            glScalef(1.2, 1.5, 0.01);
+        render_ground(&(scene->pavement));
+        render_ground(&(scene->road));
+        render_ground(&(scene->grass));
+
+        
+
+        for(int i=0; i < MAX_CATS; i++){
+            glPushMatrix();
+            glTranslatef(scene->cats[i].position.x, scene->cats[i].position.y, scene->cats[i].position.z);
+            glRotatef(scene->cats[i].rotation, 0, 0, 1);
+            glBindTexture(GL_TEXTURE_2D, scene->cats[i].texture);
+            
+            if(scene->cats[i].is_dead == true){
+                glTranslatef(0, 0, -0.3);
+                glScalef(1.2, 1.5, 0.01);
+            }
+            
+            draw_model(&(scene->cats[i].model));
+            glPopMatrix();
         }
-        
-        draw_model(&(scene->cats[i].model));
+
+        glPushMatrix();
+        glTranslatef(scene->bus.position.x, scene->bus.position.y, scene->bus.position.z);
+        glRotatef(scene->bus.rotation, 0, 0, 1);
+        glBindTexture(GL_TEXTURE_2D, scene->bus.texture);
+        draw_model(&(scene->bus.model));
         glPopMatrix();
+
+        scene->cursor_location = Calculate3DCursorLocation(x, y);
+
+        char str[10];
+        sprintf(str, "%d", scene->score);
+        drawText(20, 70, 0.5, 3, GLUT_STROKE_ROMAN, str, 0.85882352941, 0.43921568627, 0.57647058823);
+
+        if(scene->is_over == true){
+            sprintf(str, "GAME OVER");
+            drawText(80, 400, 1.4, 10, GLUT_STROKE_ROMAN, str, 1, 0, 0);
+        }
+
+    } 
+    else if(scene->is_start == true){
+        drawMenu(scene->game_start);
+    } else if(scene->is_over == true){
+        drawMenu(scene->game_over);
+        char str[3];
+        sprintf(str, "%d", scene->score);
+        int text_x;
+        if(scene->score >= 10){
+            text_x = 530;
+        } else {
+            text_x = 580;
+        } 
+        drawText(text_x, 470, 1.4, 10, GLUT_STROKE_ROMAN, str, 1, 1, 1);
     }
-
-    glPushMatrix();
-    glTranslatef(scene->bus.position.x, scene->bus.position.y, scene->bus.position.z);
-    glRotatef(scene->bus.rotation, 0, 0, 1);
-    glBindTexture(GL_TEXTURE_2D, scene->bus.texture);
-    draw_model(&(scene->bus.model));
-    glPopMatrix();
-
-    scene->cursor_location = Calculate3DCursorLocation(x, y);
-
-    char str[10];
-    sprintf(str, "%d", scene->score);
-    drawText(20, 70, 0.5, 3, GLUT_STROKE_ROMAN, str, 0.85882352941, 0.43921568627, 0.57647058823);
+        
 }
 
 void draw_origin()

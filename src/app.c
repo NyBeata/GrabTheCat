@@ -41,6 +41,8 @@ void init_app(App* app, int width, int height)
     reshape(width, height);
 
     init_camera(&(app->camera));
+
+    app->scene.base_time = 0;
     init_scene(&(app->scene));
 
     //glTranslatef(&(app->scene));
@@ -119,6 +121,12 @@ void handle_app_events(App* app)
             case SDL_SCANCODE_ESCAPE:
                 app->is_running = false;
                 break;
+            case SDL_SCANCODE_SPACE:
+                if(app->scene.is_start == true || app->scene.is_over == true){
+                    init_scene(&(app->scene));
+                    app->scene.is_start = false;
+                }
+                break;
             /*case SDL_SCANCODE_W:
                 set_camera_speed(&(app->camera), 1);
                 break;
@@ -151,7 +159,9 @@ void handle_app_events(App* app)
             break;
         case SDL_MOUSEBUTTONDOWN:
             is_mouse_down = true;
-            grab_the_cat(&(app->scene));
+            if(app->scene.is_over == false){
+                grab_the_cat(&(app->scene));
+            }
             break;
         case SDL_MOUSEMOTION:
             SDL_GetMouseState(&x, &y);
@@ -184,7 +194,15 @@ void update_app(App* app)
     app->uptime = current_time;
 
     update_camera(&(app->camera), elapsed_time);
-    update_scene(&(app->scene));
+    get_elapsed_time(&(app->scene));
+    if(app->scene.is_start == false && (app->scene.is_over == false || app->scene.final_countdown > 100)){
+        update_scene(&(app->scene));
+    }
+    
+    if(app->scene.is_over == true && app->scene.final_countdown > 100){
+        app->scene.final_countdown -= app->scene.elapsed_time;
+    }
+    
 }
 
 void render_app(App* app)

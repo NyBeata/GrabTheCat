@@ -58,7 +58,7 @@ void drawText(float x, float y, float size, float width, void *font, char *strin
 
 void renderStrokeFontString(float x, float y, float size, float width, void *font, char *string, float r, float g, float b);
 
-void drawOpening();
+void drawMenu(GLuint texture);
 
 
 #endif /* UTILS_H */

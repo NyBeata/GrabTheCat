@@ -104,7 +104,7 @@ void renderStrokeFontString(float x, float y, float size, float width, void *fon
 	glPushMatrix();
     glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
-	glTranslatef(x, y, 0);
+	glTranslatef(x, y, 0.1);
 	glScalef(size, -(size), size);
     glLineWidth(width);
     glColor3f(r, g, b);
@@ -116,16 +116,16 @@ void renderStrokeFontString(float x, float y, float size, float width, void *fon
 	glPopMatrix();
 }
 
-void drawOpening()
+void drawMenu(GLuint texture)
 {
 	setOrthographicProjection();
 	
 	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
-	//glBindTexture(GL_TEXTURE_2D, texture_names[17]);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	
 	glPushMatrix();
 	glLoadIdentity();
-	
+	//glTranslatef(0,0,1);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0, 0.0);
         glVertex3d(0, 0, 0);
