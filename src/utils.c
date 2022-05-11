@@ -49,8 +49,7 @@ void setOrthographicProjection() {
 	// switch to projection mode
 	glMatrixMode(GL_PROJECTION);
 
-	// save previous matrix which contains the
-	//settings for the perspective projection
+	// save previous matrix which contains the settings for the perspective projection
 	glPushMatrix();
 
 	// reset matrix
@@ -71,16 +70,6 @@ void restorePerspectiveProjection() {
 
 	// get back to modelview mode
 	glMatrixMode(GL_MODELVIEW);
-}
-
-void renderBitmapString(float x, float y, float z, void *font, char *string)
-{
-
-	char *c;
-	glRasterPos3f(x, y, z);
-	for (c=string; *c != '\0'; c++) {
-		glutBitmapCharacter(font, *c);
-	}
 }
 
 void drawText(float x, float y, float size, float width, void *font, char *string, float r, float g, float b)
@@ -125,7 +114,6 @@ void drawMenu(GLuint texture)
 	
 	glPushMatrix();
 	glLoadIdentity();
-	//glTranslatef(0,0,1);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0, 0.0);
         glVertex3d(0, 0, 0);

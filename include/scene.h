@@ -29,6 +29,7 @@ typedef struct Scene
     bool is_start;
     bool is_over;
     int final_countdown;
+    bool paused;
 } Scene;
 
 /**
@@ -55,11 +56,6 @@ void update_scene(Scene* scene);
  * Render the scene objects.
  */
 void render_scene(Scene* scene);
-
-/**
- * Draw the origin of the world coordinate system.
- */
-void draw_origin();
 
 void get_elapsed_time(Scene* scene);
 

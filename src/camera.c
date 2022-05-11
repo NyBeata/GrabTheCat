@@ -17,20 +17,23 @@ void init_camera(Camera* camera)
     camera->speed.z = 0.0;
 
     camera->is_preview_visible = false;
+    camera->freeroam = false;
 }
 
 void update_camera(Camera* camera, double time)
 {
-    double angle;
-    double side_angle;
+    if(camera->freeroam == true){
+        double angle;
+        double side_angle;
 
-    angle = degree_to_radian(camera->rotation.z);
-    side_angle = degree_to_radian(camera->rotation.z + 90.0);
+        angle = degree_to_radian(camera->rotation.z);
+        side_angle = degree_to_radian(camera->rotation.z + 90.0);
 
-    camera->position.x += cos(angle) * camera->speed.y * time;
-    camera->position.y += sin(angle) * camera->speed.y * time;
-    camera->position.x += cos(side_angle) * camera->speed.x * time;
-    camera->position.y += sin(side_angle) * camera->speed.x * time;
+        camera->position.x += cos(angle) * camera->speed.y * time;
+        camera->position.y += sin(angle) * camera->speed.y * time;
+        camera->position.x += cos(side_angle) * camera->speed.x * time;
+        camera->position.y += sin(side_angle) * camera->speed.x * time;
+    } 
 }
 
 void set_view(const Camera* camera)
@@ -45,23 +48,25 @@ void set_view(const Camera* camera)
 
 void rotate_camera(Camera* camera, double horizontal, double vertical)
 {
-    camera->rotation.z += horizontal;
-    camera->rotation.x += vertical;
+    if(camera->freeroam == true){
+        camera->rotation.z += horizontal;
+        camera->rotation.x += vertical;
 
-    if (camera->rotation.z < 0) {
-        camera->rotation.z += 360.0;
-    }
+        if (camera->rotation.z < 0) {
+            camera->rotation.z += 360.0;
+        }
 
-    if (camera->rotation.z > 360.0) {
-        camera->rotation.z -= 360.0;
-    }
+        if (camera->rotation.z > 360.0) {
+            camera->rotation.z -= 360.0;
+        }
 
-    if (camera->rotation.x < 0) {
-        camera->rotation.x += 360.0;
-    }
+        if (camera->rotation.x < 0) {
+            camera->rotation.x += 360.0;
+        }
 
-    if (camera->rotation.x > 360.0) {
-        camera->rotation.x -= 360.0;
+        if (camera->rotation.x > 360.0) {
+            camera->rotation.x -= 360.0;
+        }
     }
 }
 

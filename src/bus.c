@@ -7,23 +7,20 @@ void init_bus(Bus* bus)
     spawn_bus(bus);
 
     bus->speed = 0.01;
-    bus->position.z = -0.2;
-    /*bus->position.x = 1.5;
-    bus->position.y = 0;
-    bus->rotation = 0;
-    bus->cooldown = 0;*/
+    bus->position.z = -0.5;
 }
 
 void spawn_bus(Bus* bus)
 {
+    // jobb vagy bal oldal eldöntése
     int LoR = (rand() %(1 - 0 + 1)) + 0;
 
     if(LoR == 0){
-        bus->position.x = 3.1;
+        bus->position.x = 4;
         bus->position.y = 10;
         bus->rotation = 180;
     } else {
-        bus->position.x = 1.6;
+        bus->position.x = 2;
         bus->position.y = -10;
         bus->rotation = 0;
     }

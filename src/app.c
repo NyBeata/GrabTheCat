@@ -45,8 +45,6 @@ void init_app(App* app, int width, int height)
     app->scene.base_time = 0;
     init_scene(&(app->scene));
 
-    //glTranslatef(&(app->scene));
-
     app->is_running = true;
 }
 
@@ -127,7 +125,17 @@ void handle_app_events(App* app)
                     app->scene.is_start = false;
                 }
                 break;
-            /*case SDL_SCANCODE_W:
+            case SDL_SCANCODE_0:
+                if(app->camera.freeroam == false){
+                    app->camera.freeroam = true;
+                    app->scene.paused = true;
+                } else {
+                    app->camera.freeroam = false;
+                    init_camera(&(app->camera));
+                    app->scene.paused = false;
+                }
+                break;
+            case SDL_SCANCODE_W:
                 set_camera_speed(&(app->camera), 1);
                 break;
             case SDL_SCANCODE_S:
@@ -138,21 +146,21 @@ void handle_app_events(App* app)
                 break;
             case SDL_SCANCODE_D:
                 set_camera_side_speed(&(app->camera), -1);
-                break;*/
+                break;
             default:
                 break;
             }
             break;
         case SDL_KEYUP:
             switch (event.key.keysym.scancode) {
-            /*case SDL_SCANCODE_W:
+            case SDL_SCANCODE_W:
             case SDL_SCANCODE_S:
                 set_camera_speed(&(app->camera), 0);
                 break;
             case SDL_SCANCODE_A:
             case SDL_SCANCODE_D:
                 set_camera_side_speed(&(app->camera), 0);
-                break;*/
+                break;
             default:
                 break;
             }
@@ -165,9 +173,9 @@ void handle_app_events(App* app)
             break;
         case SDL_MOUSEMOTION:
             SDL_GetMouseState(&x, &y);
-            /*if (is_mouse_down) {
+            if (is_mouse_down) {
                 rotate_camera(&(app->camera), mouse_x - x, mouse_y - y);
-            }*/
+            }
             mouse_x = x;
             mouse_y = y;
             break;
@@ -195,7 +203,7 @@ void update_app(App* app)
 
     update_camera(&(app->camera), elapsed_time);
     get_elapsed_time(&(app->scene));
-    if(app->scene.is_start == false && (app->scene.is_over == false || app->scene.final_countdown > 100)){
+    if(app->scene.is_start == false && (app->scene.is_over == false || app->scene.final_countdown > 100) && app->scene.paused == false){
         update_scene(&(app->scene));
     }
     

@@ -42,8 +42,9 @@ void init_scene(Scene* scene)
 
     scene->is_start = true;
     scene->is_over = false;
+    scene->paused = false;
 
-    scene->final_countdown = 4000;
+    scene->final_countdown = 4000;  
 }
 
 void set_lighting()
@@ -91,6 +92,7 @@ void set_material(const Material* material)
 
 void update_scene(Scene* scene)
 {
+    //pont számolás
     if(scene->sec > 100){
         scene->sec -= scene->elapsed_time;
     } else if (scene->is_over == false) {
@@ -100,15 +102,18 @@ void update_scene(Scene* scene)
 
     for(int i=0; i < MAX_CATS; i++){
         if(scene->cats[i].is_grabbed == false && scene->cats[i].is_dead == false){
+            //macska mozgás
             cat_ai_handler(&(scene->cats[i]), scene->elapsed_time);
             move_cat(&(scene->cats[i]), scene->elapsed_time);
         } else if (scene->cats[i].is_dead == false){
+            //macska átpakolás
             relocate_cat(&(scene->cats[i]), scene->cursor_location.x, scene->cursor_location.y);
         }    
     }
 
     move_bus(&(scene->bus), scene->elapsed_time);
 
+    //ütközés vizsgálat
     for(int i=0; i < MAX_CATS; i++){
         if(fabs(scene->cats[i].position.x - scene->bus.position.x) < 0.65){
             if(fabs(scene->cats[i].position.y - scene->bus.position.y) < 1.1){
@@ -129,12 +134,9 @@ void render_scene(Scene* scene)
         int y;
         SDL_GetMouseState(&x, &y);
 
-        
         render_ground(&(scene->pavement));
         render_ground(&(scene->road));
         render_ground(&(scene->grass));
-
-        
 
         for(int i=0; i < MAX_CATS; i++){
             glPushMatrix();
@@ -142,8 +144,9 @@ void render_scene(Scene* scene)
             glRotatef(scene->cats[i].rotation, 0, 0, 1);
             glBindTexture(GL_TEXTURE_2D, scene->cats[i].texture);
             
+            //halott cica kilapítása
             if(scene->cats[i].is_dead == true){
-                glTranslatef(0, 0, -0.3);
+                glTranslatef(0, 0, -0.22);
                 glScalef(1.2, 1.5, 0.01);
             }
             
@@ -160,6 +163,7 @@ void render_scene(Scene* scene)
 
         scene->cursor_location = Calculate3DCursorLocation(x, y);
 
+        //pont kiiratás
         char str[10];
         sprintf(str, "%d", scene->score);
         drawText(20, 70, 0.5, 3, GLUT_STROKE_ROMAN, str, 0.85882352941, 0.43921568627, 0.57647058823);
@@ -177,33 +181,16 @@ void render_scene(Scene* scene)
         char str[3];
         sprintf(str, "%d", scene->score);
         int text_x;
-        if(scene->score >= 10){
+        if(scene->score >= 10 && scene->score < 100){
             text_x = 530;
-        } else {
+        } else if(scene->score < 10){
             text_x = 580;
-        } 
+        } else if(scene->score >= 100){
+            text_x = 480;
+        }
         drawText(text_x, 470, 1.4, 10, GLUT_STROKE_ROMAN, str, 1, 1, 1);
     }
         
-}
-
-void draw_origin()
-{
-    glBegin(GL_LINES);
-
-    glColor3f(1, 0, 0);
-    glVertex3f(0, 0, 0);
-    glVertex3f(1, 0, 0);
-
-    glColor3f(0, 1, 0);
-    glVertex3f(0, 0, 0);
-    glVertex3f(0, 1, 0);
-
-    glColor3f(0, 0, 1);
-    glVertex3f(0, 0, 0);
-    glVertex3f(0, 0, 1);
-
-    glEnd();
 }
 
 void get_elapsed_time(Scene* scene)
@@ -213,8 +200,6 @@ void get_elapsed_time(Scene* scene)
     if(new_elapsed_time >= 1){
         scene->elapsed_time = new_elapsed_time;
         scene->base_time = current_time;
-
-        //printf("\nElapsed time: %d, New base time: %d", scene->elapsed_time, scene->base_time);
     }
     else{
         scene->elapsed_time = 0;

@@ -10,6 +10,8 @@
 #include <stdbool.h>
 
 #define MAX_CATS 6
+#define ROAD_START 1.5
+#define ROAD_END 4.9
 
 typedef struct Cat
 {
